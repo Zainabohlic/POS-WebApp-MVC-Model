@@ -1,0 +1,61 @@
+﻿@model POS.Models.SupplyReqViewModel
+
+@{
+    ViewBag.Title = "Create Supply Request";
+}
+
+<h2>Create Supply Request</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="SupplierId">Supplier</label>
+        <select id="SupplierId" name="SupplierId" class="form-control">
+            <option value="">Select Supplier</option>
+            @foreach (var supplier in ViewBag.Suppliers)
+            {
+                <option value="@supplier.SupplierId">@supplier.SupplierName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="ProductID">Product</label>
+        <select id="ProductID" name="ProductID" class="form-control">
+            <option value="">Select Product</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Quantity">Quantity</label>
+        <input type="number" id="Quantity" name="Quantity" class="form-control" required />
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<br />
+
+<button onclick="location.href='@Url.Action("Status", "SupplyReq")'" class="btn btn-info">View Status</button>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#SupplierId').change(function () {
+                var supplierId = $(this).val();
+                if (supplierId) {
+                    $.getJSON('@Url.Action("GetProductsBySupplier", "SupplyReq")', { supplierId: supplierId }, function (data) {
+                        var productsDropdown = $('#ProductID');
+                        productsDropdown.empty();
+                        productsDropdown.append('<option value="">Select Product</option>');
+                        $.each(data, function (index, product) {
+                            productsDropdown.append('<option value="' + product.productID + '">' + product.productName + '</option>');
+                        });
+                    });
+                } else {
+                    $('#ProductID').empty().append('<option value="">Select Product</option>');
+                }
+            });
+        });
+    </script>
+}

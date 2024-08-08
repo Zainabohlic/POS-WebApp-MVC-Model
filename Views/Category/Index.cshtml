@@ -1,0 +1,151 @@
+﻿@model List<CategoryViewModel>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - POS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <h1>Categories</h1>
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add New Category</button>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">Delete Category</button>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#viewCategoryModal">View Categories</button>
+
+    <!-- Categories Display -->
+    @foreach (var category in Model)
+    {
+        <h2>@category.CategoryName</h2>
+    }
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCategoryForm">
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="categoryName" name="CategoryName" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Category Modal -->
+    <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteCategoryModalLabel">Delete Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deleteCategoryForm">
+                        <div class="mb-3">
+                            <label for="categorySelect" class="form-label">Select Category to Delete</label>
+                            <select class="form-select" id="categorySelect" name="CategoryID" required>
+                                <option value="">Select a Category</option>
+                                @foreach (var category in Model)
+                                {
+                                    <option value="@category.CategoryID">@category.CategoryName</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Category Modal -->
+    <div class="modal fade" id="viewCategoryModal" tabindex="-1" aria-labelledby="viewCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewCategoryModalLabel">View Categories</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="categoryList">
+                    <!-- Categories will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Handle form submission for adding category
+            $('#addCategoryForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("AddCategory", "Category")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('#addCategoryModal').modal('hide');
+                            location.reload(); // Reload the page to reflect changes
+                        } else {
+                            alert("An error occurred while adding the category.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+
+            // Handle form submission for deleting category
+            $('#deleteCategoryForm').submit(function (e) {
+                e.preventDefault();
+                var categoryId = $('#categorySelect').val();
+                $.ajax({
+                    url: '@Url.Action("DeleteCategory", "Category")',
+                    type: 'POST',
+                    data: { categoryId: categoryId },
+                    success: function (result) {
+                        if (result.success) {
+                            $('#deleteCategoryModal').modal('hide');
+                            location.reload(); // Reload the page to reflect changes
+                        } else {
+                            alert("An error occurred while deleting the category.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+
+            // Handle fetching and displaying categories in the view modal
+            $('#viewCategoryModal').on('show.bs.modal', function () {
+                $.ajax({
+                    url: '@Url.Action("GetCategories", "Category")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#categoryList').html(result);
+                    },
+                    error: function (xhr, status, error) {
+                        alert("An error occurred: " + error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<POS.Models.SupplyReqViewModel>
+
+@{
+    ViewBag.Title = "Request Status";
+}
+
+<h2>Request Status</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Request ID</th>
+            <th>Product ID</th>
+            <th>Supplier ID</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th>Added By</th>
+         @*    <th>Added Date</th> *@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.SupplyReqID</td>
+                <td>@request.ProductID</td>
+                <td>@request.SupplierID</td>
+                <td>@request.Quantity</td>
+                <td>@request.Status</td>
+                <td>@request.AddedBy</td>
+              @*   <td>@request.AddedDate</td> *@
+            </tr>
+        }
+    </tbody>
+</table>
