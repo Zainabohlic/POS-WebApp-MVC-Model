@@ -99,12 +99,14 @@ In ASP.NET Core MVC, the application is structured into several key components:
 ### How to Run
   Build and Run the Application:  
 
-   ![Alt Text](9.png)
-
 ```bash
   dotnet build
   dotnet run
 ```
+
+   ![Alt Text](9.png)  
+
+   
 ### Access the Application:
 Open your browser and navigate to http://localhost:5000 (or the port specified in your configuration).
 
